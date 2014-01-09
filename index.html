@@ -21,16 +21,16 @@
   </head>
 
   <body>
-	<img src="2013-5-15.jpg"/>
+		
         <div id="step1">
         <div id="content" style="color:Red"></div>
         <div style="display:none" id="content_hide">萌萌的生气笔记</div>
         <div><a id="openBtn" href="javascript:void()"  style="display:none;text-align:center">Open</a></div>
         </div>
         
+
         <div id="step2" style="display:none;">
         <ul id="list">
-        
         </ul>
         </div>
         
@@ -45,21 +45,27 @@
         
        <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
        <script type="text/javascript">
+			
 
-      
-          (function() {
-              var index = 0;
-              var word = document.getElementById("content_hide").innerHTML;
-              var type = function() {
-                  document.getElementById("content").innerText = word.substring(0, index++);
-                  if (index == word.length + 1) {
-                      clearInterval(num);
-                      $("#openBtn").fadeIn("slow");
-                  }
-              }
-              var num = setInterval(type, 300);
+          var app=app||{};
 
-              var initList = function() {
+		
+
+
+		app.Init=function(){
+
+			  $("#openBtn").bind("click", function() {
+                  $("#step1").fadeOut("fast");
+                  initList();
+                  $("#step2").fadeIn("slow");
+              });
+
+              $("#returnList").bind("click", function() {
+                  $("#step3").fadeOut("fast");
+                  $("#step2").fadeIn("slow");
+              });
+
+			  var initList = function() {
 
                   $.ajax({
                       url: "list.json",
@@ -71,30 +77,34 @@
                                   $("#step2").fadeOut("fast");
                                   $("#step3").fadeIn("slow");
                                   $("#post").html(val.content);
-                                  $("#image").append("<img src="+val.image+"/>");
-
+                                  $("#image").html("<img src="+val.image+">");
 
                               })
                           });
                       }
                   });
               };
+		};
 
 
-              $("#openBtn").bind("click", function() {
-                  $("#step1").fadeOut("fast");
-                  initList();
-                  $("#step2").fadeIn("slow");
-              });
 
-              $("#returnList").bind("click", function() {
-                  $("#step3").fadeOut("fast");
-                  $("#step2").fadeIn("slow");
-              });
+		(function(){
 
+			  var index = 0;
+              var word = $("#content_hide").html();
+              var type = function() {
+                  $("#content").html(word.substring(0, index++));
+                  if (index == word.length + 1) {
+                      clearInterval(num);
+                      $("#openBtn").fadeIn("slow");
+                  }
+              }
+              var num = setInterval(type, 300);
 
-          })();
+			 app.Init();
+		  })();
 
+		  
        </script>
           
           
