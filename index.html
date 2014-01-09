@@ -2,22 +2,10 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link rel="stylesheet" type="text/css" href="fancybox/jquery.fancybox-1.3.4.css" media="all" />
+	<link rel="stylesheet" type="text/css" href="css/css.css" media="all" />
     <title></title>
-    
-    <style type="text/css"> 
-    body {
-    text-align: center;
-    }
-    #container {
-    margin-left: auto;
-    margin-right: auto;
-    border: 1px solid red;
-    width: 168px;
-    text-align: left
-    }
-    </style>
-       
-    
+
   </head>
 
   <body>
@@ -25,10 +13,21 @@
         <div id="step1">
         <div id="content" style="color:Red"></div>
         <div style="display:none" id="content_hide">萌萌的生气笔记</div>
+        
+  
+    <div id="picbox">
+        <a rel="example_group" href="images/photos/MYXJ_0.jpg" title=""><img alt="" src="images/photos/MYXJ_0.jpg" /> </a>
+
+		<a rel="example_group" href="images/photos/MYXJ_1.jpg" title=""></a>
+
+		<a rel="example_group" href="images/photos/MYXJ_2.jpg" title=""></a>
+		
+		<a rel="example_group" href="images/photos/MYXJ_3.jpg" title=""></a>		<a rel="example_group" href="images/photos/MYXJ_4.jpg" title=""></a>		<a rel="example_group" href="images/photos/MYXJ_5.jpg" title=""></a>		<a rel="example_group" href="images/photos/MYXJ_6.jpg" title=""></a>		<a rel="example_group" href="images/photos/MYXJ_7.jpg" title=""></a>		<a rel="example_group" href="images/photos/MYXJ_8.jpg" title=""></a>		<a rel="example_group" href="images/photos/MYXJ_9.jpg" title=""></a>		<a rel="example_group" href="images/photos/MYXJ_10.jpg" title=""></a>				<a rel="example_group" href="images/photos/MYXJ_11.jpg" title=""></a>		<a rel="example_group" href="images/photos/MYXJ_12.jpg" title=""></a>
+      </div> 
+        
         <div><a id="openBtn" href="javascript:void()"  style="display:none;text-align:center">Open</a></div>
         </div>
         
-
         <div id="step2" style="display:none;">
         <ul id="list">
         </ul>
@@ -38,72 +37,89 @@
         <div id="step3" style="display:none;">
         <div id="post"></div>
         <div id="image"></div>
-        <div><a id="returnList" href="javascript:void()" style="text-align:center">Return</a></div>
+        <div>
+        <a id="returnList" href="javascript:void()" style="text-align:center">Return</a>
+        <a id="nextBtn" href="javascript:void()" style="text-align:center">Next</a>    
+        </div>
         </div>
         
    
         
-       <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+       <script type="text/javascript" src="javascript/jquery-1.4.3.min.js"></script>
+       <script type="text/javascript" src="fancybox/jquery.mousewheel-3.0.4.pack.js"></script>
+	   <script type="text/javascript" src="fancybox/jquery.fancybox-1.3.4.pack.js"></script>
        <script type="text/javascript">
 			
 
-          var app=app||{};
+        var app=app||{};
 
-		
+        app.Init = function() {
 
+            $("#openBtn").bind("click", function() {
+                $("#step1").fadeOut("fast");
+                initList();
+                $("#step2").fadeIn("slow");
+            });
 
-		app.Init=function(){
+            $("#returnList").bind("click", function() {
+                $("#step3").fadeOut("fast");
+                $("#step2").fadeIn("slow");
+            });
 
-			  $("#openBtn").bind("click", function() {
-                  $("#step1").fadeOut("fast");
-                  initList();
-                  $("#step2").fadeIn("slow");
-              });
-
-              $("#returnList").bind("click", function() {
-                  $("#step3").fadeOut("fast");
-                  $("#step2").fadeIn("slow");
-              });
-
-			  var initList = function() {
-
-                  $.ajax({
-                      url: "list.json",
-                      dataType: "json",
-                      success: function(data) {
-                          $.each(data, function(key, val) {
-                              $("#list").append("<li><a id=a" + key + " href='javascript:void()'>" + val.date + "</a></li>");
-                              $("#a" + key + "").bind("click", function() {
-                                  $("#step2").fadeOut("fast");
-                                  $("#step3").fadeIn("slow");
-                                  $("#post").html(val.content);
-                                  $("#image").html("<img src="+val.image+">");
-
-                              })
-                          });
-                      }
-                  });
-              };
-		};
+            $("#nextBtn").bind("click", function() {
+                $("#a" + (app.postId + 1)).click();
+            });
 
 
+            var initList = function() {
 
-		(function(){
+                $.ajax({
+                    url: "list.json",
+                    dataType: "json",
+                    success: function(data) {
+                        $.each(data, function(key, val) {
+                            $("#list").append("<li><a id=a" + key + " href='javascript:void()'>" + val.date + "</a></li>");
+                            $("#a" + key + "").bind("click", function() {
+                                $("#step2").fadeOut("fast");
+                                $("#step3").fadeIn("slow");
+                                $("#post").html(val.content);
+                                $("#image").html("<img src=" + val.image + ">");
+                                debugger;
+                                app.postId = key;
+                            })
+                        });
+                    }
+                });
+            };
+        };
 
-			  var index = 0;
-              var word = $("#content_hide").html();
-              var type = function() {
-                  $("#content").html(word.substring(0, index++));
-                  if (index == word.length + 1) {
-                      clearInterval(num);
-                      $("#openBtn").fadeIn("slow");
-                  }
-              }
-              var num = setInterval(type, 300);
+        $(document).ready(function() {
 
-			 app.Init();
-		  })();
+            $("a[rel=example_group]").fancybox({
+                'transitionIn': 'none',
+                'transitionOut': 'none',
+                'titlePosition': 'over',
+                'titleFormat': function(title, currentArray, currentIndex, currentOpts) {
+                    return '<span id="fancybox-title-over">Image ' + (currentIndex + 1) + ' / '
+                  + currentArray.length + (title.length ? ' &nbsp; ' + title : '') + '</span>';
+                }
+            });
 
+
+            var index = 0;
+            var word = $("#content_hide").html();
+            var type = function() {
+                $("#content").html(word.substring(0, index++));
+                if (index == word.length + 1) {
+                    clearInterval(num);
+                    $("#openBtn").fadeIn("slow");
+                }
+            };
+            var num = setInterval(type, 300);
+            app.Init();
+
+
+        });          
 		  
        </script>
           
